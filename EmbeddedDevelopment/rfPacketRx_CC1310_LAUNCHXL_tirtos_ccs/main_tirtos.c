@@ -45,6 +45,8 @@
 /* Example/Board Header files */
 #include "Board.h"
 
+#include "Drivers/UARTStart.h"
+
 extern void *mainThread(void *arg0);
 
 /* Stack size in bytes */
@@ -63,7 +65,7 @@ int main(void)
 
     /* Call driver init functions */
     Board_initGeneral();
-
+    Board_InitUART();
     /* Set priority and stack size attributes */
     pthread_attr_init(&attrs);
     priParam.sched_priority = 1;
