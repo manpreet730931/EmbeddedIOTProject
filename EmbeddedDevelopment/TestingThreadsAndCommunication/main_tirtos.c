@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Texas Instruments Incorporated
+ * Copyright (c) 2016-2019, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,13 @@
 #include <ti/sysbios/BIOS.h>
 
 /* Example/Board Header files */
-#include "Board.h"
+#include <ti/drivers/Board.h>
 
-extern void *uartTask(void *arg0);
+/*Tasks include files*/
+
+#include <Tasks/taskDefinitions.h>
+
+
 
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
@@ -55,32 +59,40 @@ extern void *uartTask(void *arg0);
  */
 int main(void)
 {
+    //Handles for the threads
+    pthread_t           ledThread;
     pthread_t           thread;
+    //These definitions are used globally amoung the threads
     pthread_attr_t      attrs;
     struct sched_param  priParam;
     int                 retc;
     int                 detachState;
 
     /* Call driver init functions */
-    Board_initGeneral();
+    Board_init();
 
-    /* Set priority and stack size attributes */
+    /*
+     *  Thread 1
+     */
+
+    /* Initialize the attributes structure with default values */
     pthread_attr_init(&attrs);
     priParam.sched_priority = 1;
 
     detachState = PTHREAD_CREATE_DETACHED;
     retc = pthread_attr_setdetachstate(&attrs, detachState);
-    if (retc != 0) {
-        /* pthread_attr_setdetachstate() failed */
-        while (1);
+    if(retc != 0)
+    {
+        //Error in setting the dettached mode of the thread
+        while(1);
     }
-
     pthread_attr_setschedparam(&attrs, &priParam);
 
-    retc |= pthread_attr_setstacksize(&attrs, THREADSTACKSIZE);
-    if (retc != 0) {
-        /* pthread_attr_setstacksize() failed */
-        while (1);
+    retc |= pthread_attr_setstacksize(&attrs,THREADSTACKSIZE);
+    if(retc!=0)
+    {
+        //Error setting the stack size
+        while(1);
     }
 
     retc = pthread_create(&thread, &attrs, uartTask, NULL);
@@ -88,6 +100,27 @@ int main(void)
         /* pthread_create() failed */
         while (1);
     }
+    /*
+     * End Thread 1
+     */
+
+    /*
+     * Thread 2
+     */
+    priParam.sched_priority = 2;
+    pthread_attr_setschedparam(&attrs, &priParam);
+
+    retc = pthread_create(&ledThread,&attrs,ledTask,NULL);
+    if(retc != 0)
+    {
+        //Failed creating this thread
+        while(1);
+    }
+    /*
+     * End Thread 2
+     */
+
+
 
     BIOS_start();
 

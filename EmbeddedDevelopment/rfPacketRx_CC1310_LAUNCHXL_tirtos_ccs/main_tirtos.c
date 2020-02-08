@@ -47,7 +47,7 @@
 
 //#include "Drivers/UARTStart.h"
 
-extern void *mainThread(void *arg0);
+extern void *uartTask(void *arg0);
 
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
@@ -85,7 +85,7 @@ int main(void)
         while (1);
     }
 
-    retc = pthread_create(&thread, &attrs, mainThread, NULL);
+    retc = pthread_create(&thread, &attrs, uartTask, NULL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);

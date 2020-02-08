@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2019, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,64 +25,65 @@
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
  * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-
  * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /*
- *  ======== main_tirtos.c ========
+ *  ======== uartecho.c ========
  */
 #include <stdint.h>
+#include <stddef.h>
 
-/* POSIX Header files */
-#include <pthread.h>
-
-/* RTOS header files */
-#include <ti/sysbios/BIOS.h>
+/* Driver Header files */
+#include <ti/drivers/GPIO.h>
+#include <ti/drivers/UART.h>
 
 /* Example/Board Header files */
-#include <ti/drivers/Board.h>
-
-extern void *mainThread(void *arg0);
-
-/* Stack size in bytes */
-#define THREADSTACKSIZE    1024
+#include "Board.h"
+#include "taskDefinitions.h"
 
 /*
- *  ======== main ========
+ *  ======== mainThread ========
  */
-int main(void)
+void *uartTask(void *arg0)
 {
-    pthread_t           thread;
-    pthread_attr_t      attrs;
-    struct sched_param  priParam;
-    int                 retc;
+    char        input;
+    const char  echoPrompt[] = "Echoing characters:\r\n";
+    UART_Handle uart;
+    UART_Params uartParams;
 
     /* Call driver init functions */
-    Board_init();
+    GPIO_init();
+    UART_init();
 
-    /* Initialize the attributes structure with default values */
-    pthread_attr_init(&attrs);
+    /* Configure the LED pin */
+    GPIO_setConfig(Board_GPIO_LED0, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
 
-    /* Set priority, detach state, and stack size attributes */
-    priParam.sched_priority = 1;
-    retc = pthread_attr_setschedparam(&attrs, &priParam);
-    retc |= pthread_attr_setdetachstate(&attrs, PTHREAD_CREATE_DETACHED);
-    retc |= pthread_attr_setstacksize(&attrs, THREADSTACKSIZE);
-    if (retc != 0) {
-        /* failed to set attributes */
-        while (1) {}
+    /* Turn on user LED */
+    GPIO_write(Board_GPIO_LED0, Board_GPIO_LED_ON);
+
+    /* Create a UART with data processing off. */
+    UART_Params_init(&uartParams);
+    uartParams.writeDataMode = UART_DATA_BINARY;
+    uartParams.readDataMode = UART_DATA_BINARY;
+    uartParams.readReturnMode = UART_RETURN_FULL;
+    uartParams.readEcho = UART_ECHO_OFF;
+    uartParams.baudRate = 115200;
+
+    uart = UART_open(Board_UART0, &uartParams);
+
+    if (uart == NULL) {
+        /* UART_open() failed */
+        while (1);
     }
 
-    retc = pthread_create(&thread, &attrs, mainThread, NULL);
-    if (retc != 0) {
-        /* pthread_create() failed */
-        while (1) {}
+    UART_write(uart, echoPrompt, sizeof(echoPrompt));
+
+    /* Loop forever echoing */
+    while (1) {
+        UART_read(uart, &input, 1);
+        UART_write(uart, &input, 1);
     }
-
-    BIOS_start();
-
-    return (0);
 }

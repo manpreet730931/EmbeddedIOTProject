@@ -117,7 +117,7 @@ PIN_Config pinTable[] =
 
 /***** Function definitions *****/
 
-void *mainThread(void *arg0)
+void *uartTask(void *arg0)
 {
     RF_Params rfParams;
     RF_Params_init(&rfParams);
