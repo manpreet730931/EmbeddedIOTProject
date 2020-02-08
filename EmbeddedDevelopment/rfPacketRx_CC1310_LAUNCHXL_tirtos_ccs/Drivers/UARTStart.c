@@ -7,7 +7,7 @@ UART_Params uartParams;
 
 void Board_InitUART()
 {
-    const char initMessage[] = "The Serial interface initialized\r\n";
+    const char initMessage[] = "The Serial interface initialized\r";
 
 
 
@@ -28,10 +28,6 @@ void Board_InitUART()
     UART_write(uart, initMessage, sizeof(initMessage));
 }
 
-void printMessage(&void param)
-{
-    char * message[] = (char*)param;
-    UART_write(uart, message, sizeof(message));
-}
+
 
 
