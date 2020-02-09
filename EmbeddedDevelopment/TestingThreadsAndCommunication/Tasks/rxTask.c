@@ -20,6 +20,7 @@
 #include "smartrf_settings/smartrf_settings.h"
 
 #include "taskDefinitions.h"
+#include "DataStructures/ComQueue.h"
 
 
 /***** Defines *****/
@@ -33,7 +34,10 @@
                                    * Max 30 payload bytes
                                    * 1 status byte (RF_cmdPropRx.rxConf.bAppendStatus = 0x1) */
 
+/* Internal data communication */
 
+Queue_Handle receptor;
+comQueue recQueue;
 
 /***** Prototypes *****/
 static void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
@@ -66,7 +70,10 @@ static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte i
 void *rxTask(void *arg0)
 {
 
-    //Things to remove after the test
+    /* Create the local queue to store data when received by the call back */
+    receptor = Queue_create(NULL,NULL);
+
+    Queue_Handle pushHandle = (Queue_Handle)arg0;
 
 
     //configuration
@@ -191,14 +198,22 @@ void *rxTask(void *arg0)
                 // pool of states defined in rf_mailbox.h
                 while(1);
         }
-
+        comQueue *recover;
         while(1)
         {
             sleep(1);
+
+            /*Verify if there is any new message to be pushed into the communication queue*/
+            if(!Queue_empty(receptor))
+            {
+                recover = Queue_dequeue(receptor);
+                Queue_enqueue(pushHandle,&(recover->elem));
+            }
+
         }
 }
 bool state = false;
-
+int i = 0;
 void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
     if (e & RF_EventRxEntryDone)
@@ -223,6 +238,14 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 
         /* Copy the payload + the status byte to the packet variable */
         memcpy(packet, packetDataPointer, (packetLength + 1));
+
+        /* Copy the result into the queue I need to use*/
+        for(i=0;i<30;i++)
+        {
+            recQueue.packet[i] = packet[i] + 48;
+        }
+        //memcpy(recQueue, packetDataPointer, (packetDataPointer + 1));
+
 
         RFQueue_nextEntry();
     }

@@ -166,7 +166,8 @@ int main(void)
      * Rx thread
      */
 
-    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
+    //Send as parameter the handle of the queue I need to pass data around
+    retc = pthread_create(&rxThreadTask, &attrs, rxTask, rxQueue);
     if(retc != 0)
     {
         while(1);

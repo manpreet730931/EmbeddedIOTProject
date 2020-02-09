@@ -55,6 +55,7 @@ void *uartTask(void *arg0)
 
     comQueue* recover;
 
+    /* It was necessary to copy thw whole result to a local variable to enable retention */
     recover = Queue_dequeue(handle);
     char result[30];
     int o=0;
@@ -97,10 +98,6 @@ void *uartTask(void *arg0)
         //UART_write(uart, &input, 1);
 
         UART_write(uart, &result,sizeof(result));
-//        for(i=0;i<30;i++)
-//        {
-//            UART_write(uart, &(recover->packet[i]), 1);
-//        }
 
         sleep(2);
 
