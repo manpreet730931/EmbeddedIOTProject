@@ -50,10 +50,13 @@
 
 #include <Tasks/taskDefinitions.h>
 
+/* Data structures defined for this development */
+#include <DataStructures/ComQueue.h>
 
 
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
+
 
 /*
  *  ======== main ========
@@ -70,6 +73,24 @@ int main(void)
     struct sched_param  priParam;
     int                 retc;
     int                 detachState;
+
+    /* Communication facilities initialization */
+
+    rxQueue = Queue_create(NULL,NULL);
+    txQueue = Queue_create(NULL,NULL);
+
+    comQueue r;
+    int i = 0;
+    for(i=0;i<30;i++)
+    {
+        r.packet[i] = i + 48;
+    }
+
+    Queue_enqueue(rxQueue, &(r.elem));
+
+//    comQueue *rec;
+//
+//    rec = Queue_dequeue(rxQueue);
 
     /* Call driver init functions */
     Board_init();
@@ -99,7 +120,7 @@ int main(void)
         while(1);
     }
 
-    retc = pthread_create(&thread, &attrs, uartTask, NULL);
+    retc = pthread_create(&thread, &attrs, uartTask, rxQueue);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);

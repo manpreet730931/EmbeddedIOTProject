@@ -43,12 +43,26 @@
 /* Example/Board Header files */
 #include "Board.h"
 #include "taskDefinitions.h"
+#include <DataStructures/ComQueue.h>
 
 /*
  *  ======== mainThread ========
  */
 void *uartTask(void *arg0)
 {
+
+    Queue_Handle handle = (Queue_Handle)arg0;
+
+    comQueue* recover;
+
+    recover = Queue_dequeue(handle);
+    char result[30];
+    int o=0;
+    for(o=0;o<30;o++)
+    {
+        result[o] = recover->packet[o];
+    }
+
     char        input;
     const char  echoPrompt[] = "Echoing characters:\r\n";
     UART_Handle uart;
@@ -73,10 +87,22 @@ void *uartTask(void *arg0)
     }
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
+    UART_write(uart, &result,sizeof(result));
 
     /* Loop forever echoing */
-    while (1) {
-        UART_read(uart, &input, 1);
-        UART_write(uart, &input, 1);
+    int i = 0;
+    while (1)
+    {
+        //UART_read(uart, &input, 1);
+        //UART_write(uart, &input, 1);
+
+        UART_write(uart, &result,sizeof(result));
+//        for(i=0;i<30;i++)
+//        {
+//            UART_write(uart, &(recover->packet[i]), 1);
+//        }
+
+        sleep(2);
+
     }
 }

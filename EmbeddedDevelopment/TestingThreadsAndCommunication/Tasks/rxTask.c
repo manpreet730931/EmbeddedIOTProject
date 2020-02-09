@@ -9,7 +9,6 @@
 #include <ti/drivers/PIN.h>
 #include <ti/drivers/GPIO.h>
 
-
 /* Driverlib Header files */
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
