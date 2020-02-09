@@ -199,6 +199,7 @@ void *rxTask(void *arg0)
                 while(1);
         }
         comQueue *recover;
+        int a = 0;
         while(1)
         {
             sleep(1);
@@ -244,6 +245,7 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         {
             recQueue.packet[i] = packet[i] + 48;
         }
+        Queue_enqueue(receptor,&(recQueue.elem));
         //memcpy(recQueue, packetDataPointer, (packetDataPointer + 1));
 
 

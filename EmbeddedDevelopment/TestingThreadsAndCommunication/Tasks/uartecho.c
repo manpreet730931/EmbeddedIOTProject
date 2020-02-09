@@ -55,7 +55,7 @@ void *uartTask(void *arg0)
 
     comQueue* recover;
 
-    /* It was necessary to copy thw whole result to a local variable to enable retention */
+    /* It was necessary to copy the whole result to a local variable to enable retention */
     recover = Queue_dequeue(handle);
     char result[30];
     int o=0;
@@ -63,6 +63,7 @@ void *uartTask(void *arg0)
     {
         result[o] = recover->packet[o];
     }
+
 
     char        input;
     const char  echoPrompt[] = "Echoing characters:\r\n";
@@ -88,15 +89,13 @@ void *uartTask(void *arg0)
     }
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
-    UART_write(uart, &result,sizeof(result));
+    //UART_write(uart, &result,sizeof(result));
 
     /* Loop forever echoing */
-    int i = 0;
     while (1)
     {
         //UART_read(uart, &input, 1);
         //UART_write(uart, &input, 1);
-
         UART_write(uart, &result,sizeof(result));
 
         sleep(2);
