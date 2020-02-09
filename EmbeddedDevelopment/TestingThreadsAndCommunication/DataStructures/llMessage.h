@@ -10,10 +10,11 @@
 /*Definition of the functions to be used in the code*/
 
 #include <string.h>
+#include "ComQueue.h"
 
 struct message_struct
 {
-    char messate[30];
+    message_t message;
     struct message_struct *pNext;
 };    
 /*
@@ -22,7 +23,7 @@ struct message_struct
  * This is the data structure to support a 
  * linked list for characters in the game.
  */
-typedef struct message_struct message;
+typedef struct message_struct do_message;
 
 
 /*

@@ -12,13 +12,13 @@
 message* addNode(go_character* pHead, character data)
 {
     //Create new node
-	go_character *pNode = createNode();
-    pNode->character = data;
+    do_message *pNode = createNode();
+    pNode->message = data;
     
     //Find the attatchement point for the new node
     //to be inserted
     
-    go_character *pw = NULL; //working pointer
+    do_message *pw = NULL; //working pointer
     pw = pHead;    
     while(pw->pNext != NULL)
     {
@@ -31,33 +31,33 @@ message* addNode(go_character* pHead, character data)
 message* createHead(character data)
 {
     //creates the head of the whole linked list
-	go_character *pHead = createNode();
-    pHead->character = data;
+    do_message *pHead = createNode();
+    pHead->message = data;
     return pHead;
 }
 
 message* createNode(void)
 {
     //Creates a dynamic space of memory to hold the new node
-	go_character* pNew = (go_character*)pvPortMalloc(sizeof(go_character));
+    do_message* pNew = (do_message*)malloc(sizeof(do_message));
     pNew->pNext = NULL;
     return pNew;
 }
 
-void deleteNode(message* pHead, uint8_t target)
+void deleteNode(do_message* pHead, uint8_t target)
 {
-    message* pw= pHead; //Working pointer
-    message* ppw=pHead; //Working parent's pointer
+    do_message* pw= pHead; //Working pointer
+    do_message* ppw=pHead; //Working parent's pointer
     
-    while((pw->character.objectID != target))
+    while((pw->message.objectID != target))
     {
         ppw=pw;
         pw=pw->pNext;
     }    
     if((pw->pNext)!= NULL)    
     {
-        message *pSave = pw->pNext;
-        vPortFree((void*)pw);
+        do_message *pSave = pw->pNext;
+        free((void*)pw);
         ppw->pNext = pSave;
     }
     else
@@ -66,21 +66,21 @@ void deleteNode(message* pHead, uint8_t target)
     }
 }
 
-void printNodes(message *pHead)
+void printNodes(do_message *pHead)
 {
 }
 
-message* getNode(message* pHead, uint8_t target)
+message* getNode(do_message* pHead, uint8_t target)
 {
-    message* pw = NULL; //Worker pointer
+    do_message* pw = NULL; //Worker pointer
     pw = pHead;
     
-    while(pw->messate.objectID != target)
+    while(pw->message.objectID != target)
     {
         pw = pHead->pNext;
     }
     //Making sure the selected target is the one we are seeking
-    if(pw->character.objectID == target)
+    if(pw->message.objectID == target)
     {
         return pw;
     }

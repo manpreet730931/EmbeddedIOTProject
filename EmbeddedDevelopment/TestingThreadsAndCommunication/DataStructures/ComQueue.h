@@ -5,13 +5,9 @@
 
 #define MAX_LENGTH             30 /* The size of the package to hold in the queue */
 
-typedef struct comQueue{
-    Queue_Elem elem;
+struct mesageQueue{
+    size_t objectID;
     char packet[MAX_LENGTH];
-}comQueue;
+};
 
-
-Queue_Handle rxQueue;
-Queue_Handle txQueue;
-
-
+typedef struct messageQueue message_t;
