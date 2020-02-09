@@ -81,6 +81,7 @@ main_tirtos.obj: /home/andres/ti/xdctools_3_51_01_18_core/packages/xdc/runtime/I
 main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/BIOS__epilogue.h
 main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/package/BIOS_RtsGateProxy.h
 main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/Board.h
+main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/GPIO.h
 main_tirtos.obj: /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/Tasks/taskDefinitions.h
 
 ../main_tirtos.c: 
@@ -164,4 +165,5 @@ main_tirtos.obj: /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/Emb
 /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/BIOS__epilogue.h: 
 /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/package/BIOS_RtsGateProxy.h: 
 /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/Board.h: 
+/home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/GPIO.h: 
 /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/Tasks/taskDefinitions.h: 

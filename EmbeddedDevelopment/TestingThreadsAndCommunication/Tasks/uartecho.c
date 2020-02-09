@@ -55,14 +55,7 @@ void *uartTask(void *arg0)
     UART_Params uartParams;
 
     /* Call driver init functions */
-    GPIO_init();
     UART_init();
-
-    /* Configure the LED pin */
-    GPIO_setConfig(Board_GPIO_LED0, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
-
-    /* Turn on user LED */
-    GPIO_write(Board_GPIO_LED0, Board_GPIO_LED_ON);
 
     /* Create a UART with data processing off. */
     UART_Params_init(&uartParams);

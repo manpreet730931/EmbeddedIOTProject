@@ -14,8 +14,12 @@ ORDERED_OBJS += \
 "./CC1310_LAUNCHXL_fxns.obj" \
 "./ccfg.obj" \
 "./main_tirtos.obj" \
+"./DataStructures/RFQueue.obj" \
 "./Tasks/LEDManagement.obj" \
+"./Tasks/rxTask.obj" \
+"./Tasks/txTask.obj" \
 "./Tasks/uartecho.obj" \
+"./smartrf_settings/smartrf_settings.obj" \
 "../CC1310_LAUNCHXL_TIRTOS.cmd" \
 -l"ti/display/lib/display.aem3" \
 -l"ti/grlib/lib/ccs/m3/grlib.a" \
@@ -35,9 +39,13 @@ RMDIR := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include DataStructures/subdir_vars.mk
 -include Tasks/subdir_vars.mk
+-include smartrf_settings/subdir_vars.mk
 -include subdir_rules.mk
+-include DataStructures/subdir_rules.mk
 -include Tasks/subdir_rules.mk
+-include smartrf_settings/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -171,8 +179,8 @@ TestingThreadsAndCommunication.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "ccfg.obj" "main_tirtos.obj" "Tasks/LEDManagement.obj" "Tasks/uartecho.obj" 
-	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "ccfg.d" "main_tirtos.d" "Tasks/LEDManagement.d" "Tasks/uartecho.d" 
+	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "ccfg.obj" "main_tirtos.obj" "DataStructures/RFQueue.obj" "Tasks/LEDManagement.obj" "Tasks/rxTask.obj" "Tasks/txTask.obj" "Tasks/uartecho.obj" "smartrf_settings/smartrf_settings.obj" 
+	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "ccfg.d" "main_tirtos.d" "DataStructures/RFQueue.d" "Tasks/LEDManagement.d" "Tasks/rxTask.d" "Tasks/txTask.d" "Tasks/uartecho.d" "smartrf_settings/smartrf_settings.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

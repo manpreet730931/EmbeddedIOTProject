@@ -44,6 +44,7 @@
 
 /* Example/Board Header files */
 #include <ti/drivers/Board.h>
+#include <ti/drivers/GPIO.h>
 
 /*Tasks include files*/
 
@@ -62,6 +63,8 @@ int main(void)
     //Handles for the threads
     pthread_t           ledThread;
     pthread_t           thread;
+    pthread_t           txThreadTask;
+    pthread_t           rxThreadTask;
     //These definitions are used globally amoung the threads
     pthread_attr_t      attrs;
     struct sched_param  priParam;
@@ -70,6 +73,7 @@ int main(void)
 
     /* Call driver init functions */
     Board_init();
+    GPIO_init();
 
     /*
      *  Thread 1
@@ -107,20 +111,49 @@ int main(void)
     /*
      * Thread 2
      */
-    priParam.sched_priority = 2;
-    pthread_attr_setschedparam(&attrs, &priParam);
-
-    retc = pthread_create(&ledThread,&attrs,ledTask,NULL);
-    if(retc != 0)
-    {
-        //Failed creating this thread
-        while(1);
-    }
+//    priParam.sched_priority = 2;
+//    pthread_attr_setschedparam(&attrs, &priParam);
+//    retc = pthread_create(&ledThread,&attrs,ledTask,NULL);
+//    if(retc != 0)
+//    {
+//        //Failed creating this thread
+//        while(1);
+//    }
     /*
      * End Thread 2
      */
 
+    /*
+     * TX thread
+     */
 
+//    priParam.sched_priority = 2;
+//    pthread_attr_setschedparam(&attrs, &priParam);
+//
+//    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
+//    if(retc != 0)
+//    {
+//        //Failed to initialize the task
+//        while(1);
+//    }
+    /*
+     * End TX thread
+     */
+
+
+    /*
+     * Rx thread
+     */
+
+    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
+    if(retc != 0)
+    {
+        while(1);
+    }
+
+    /*
+     * End Rx Thread
+     */
 
     BIOS_start();
 
