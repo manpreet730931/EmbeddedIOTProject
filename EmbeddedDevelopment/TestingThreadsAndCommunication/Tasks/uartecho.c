@@ -51,18 +51,15 @@
 void *uartTask(void *arg0)
 {
 
-    Queue_Handle handle = (Queue_Handle)arg0;
-
-    comQueue* recover;
 
     /* It was necessary to copy the whole result to a local variable to enable retention */
-    recover = Queue_dequeue(handle);
-    char result[30];
-    int o=0;
-    for(o=0;o<30;o++)
-    {
-        result[o] = recover->packet[o];
-    }
+//    recover = Queue_dequeue(handle);
+//    char result[30];
+//    int o=0;
+//    for(o=0;o<30;o++)
+//    {
+//        result[o] = recover->packet[o];
+//    }
 
 
     char        input;
@@ -94,9 +91,9 @@ void *uartTask(void *arg0)
     /* Loop forever echoing */
     while (1)
     {
-        //UART_read(uart, &input, 1);
-        //UART_write(uart, &input, 1);
-        UART_write(uart, &result,sizeof(result));
+        UART_read(uart, &input, 1);
+        UART_write(uart, &input, 1);
+        //UART_write(uart, &result,sizeof(result));
 
         sleep(2);
 

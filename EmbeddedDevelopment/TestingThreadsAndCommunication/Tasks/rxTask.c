@@ -34,11 +34,6 @@
                                    * Max 30 payload bytes
                                    * 1 status byte (RF_cmdPropRx.rxConf.bAppendStatus = 0x1) */
 
-/* Internal data communication */
-
-Queue_Handle receptor;
-comQueue recQueue;
-
 /***** Prototypes *****/
 static void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
 
@@ -71,9 +66,7 @@ void *rxTask(void *arg0)
 {
 
     /* Create the local queue to store data when received by the call back */
-    receptor = Queue_create(NULL,NULL);
 
-    Queue_Handle pushHandle = (Queue_Handle)arg0;
 
 
     //configuration
@@ -198,18 +191,18 @@ void *rxTask(void *arg0)
                 // pool of states defined in rf_mailbox.h
                 while(1);
         }
-        comQueue *recover;
+        //comQueue *recover;
         int a = 0;
         while(1)
         {
             sleep(1);
 
             /*Verify if there is any new message to be pushed into the communication queue*/
-            if(!Queue_empty(receptor))
-            {
-                recover = Queue_dequeue(receptor);
-                Queue_enqueue(pushHandle,&(recover->elem));
-            }
+//            if(!Queue_empty(receptor))
+//            {
+//                recover = Queue_dequeue(receptor);
+//                Queue_enqueue(pushHandle,&(recover->elem));
+//            }
 
         }
 }
@@ -241,11 +234,11 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         memcpy(packet, packetDataPointer, (packetLength + 1));
 
         /* Copy the result into the queue I need to use*/
-        for(i=0;i<30;i++)
-        {
-            recQueue.packet[i] = packet[i] + 48;
-        }
-        Queue_enqueue(receptor,&(recQueue.elem));
+//        for(i=0;i<30;i++)
+//        {
+//            recQueue.packet[i] = packet[i] + 48;
+//        }
+//        Queue_enqueue(receptor,&(recQueue.elem));
         //memcpy(recQueue, packetDataPointer, (packetDataPointer + 1));
 
 

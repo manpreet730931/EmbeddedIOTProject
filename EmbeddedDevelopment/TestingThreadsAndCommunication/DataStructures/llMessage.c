@@ -9,7 +9,7 @@
 #include <DataStructures/llMessage.h>
 #include <stdlib.h>
 
-message* addNode(go_character* pHead, character data)
+do_message* addNode(do_message* pHead, message_t data)
 {
     //Create new node
     do_message *pNode = createNode();
@@ -28,7 +28,7 @@ message* addNode(go_character* pHead, character data)
     return pNode;
 }
 
-message* createHead(character data)
+do_message* createHead(message_t data)
 {
     //creates the head of the whole linked list
     do_message *pHead = createNode();
@@ -36,7 +36,7 @@ message* createHead(character data)
     return pHead;
 }
 
-message* createNode(void)
+do_message* createNode(void)
 {
     //Creates a dynamic space of memory to hold the new node
     do_message* pNew = (do_message*)malloc(sizeof(do_message));
@@ -70,7 +70,7 @@ void printNodes(do_message *pHead)
 {
 }
 
-message* getNode(do_message* pHead, uint8_t target)
+do_message* getNode(do_message* pHead, uint8_t target)
 {
     do_message* pw = NULL; //Worker pointer
     pw = pHead;

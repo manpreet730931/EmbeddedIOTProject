@@ -76,21 +76,15 @@ int main(void)
 
     /* Communication facilities initialization */
 
-    rxQueue = Queue_create(NULL,NULL);
-    txQueue = Queue_create(NULL,NULL);
+    //comQueue r;
+//    int i = 0;
+//    for(i=0;i<30;i++)
+//    {
+//        r.packet[i] = i + 48;
+//    }
 
-    comQueue r;
-    int i = 0;
-    for(i=0;i<30;i++)
-    {
-        r.packet[i] = i + 48;
-    }
 
-    Queue_enqueue(rxQueue, &(r.elem));
 
-//    comQueue *rec;
-//
-//    rec = Queue_dequeue(rxQueue);
 
     /* Call driver init functions */
     Board_init();
@@ -120,7 +114,7 @@ int main(void)
         while(1);
     }
 
-    retc = pthread_create(&thread, &attrs, uartTask, rxQueue);
+    retc = pthread_create(&thread, &attrs, uartTask, NULL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);
@@ -167,7 +161,7 @@ int main(void)
      */
 
     //Send as parameter the handle of the queue I need to pass data around
-    retc = pthread_create(&rxThreadTask, &attrs, rxTask, rxQueue);
+    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
     if(retc != 0)
     {
         while(1);

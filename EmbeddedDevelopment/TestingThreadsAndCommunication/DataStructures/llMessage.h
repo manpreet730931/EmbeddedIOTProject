@@ -37,7 +37,7 @@ typedef struct message_struct do_message;
  *  better not to call this one. 
  * 
  */
-message* addNode(message* pHead, character data);
+do_message* addNode(do_message* pHead, message_t data);
 /*
  * Name: CreateNode
  * Parameters:
@@ -48,7 +48,7 @@ message* addNode(message* pHead, character data);
  * is exclusively of the type node_t. It returns a 
  * pointer to the created node.
  */
-message* createNode(void);
+do_message* createNode(void);
 /*
  * Name: CreateHead 
  * Parameters: an data_struct variable
@@ -58,9 +58,9 @@ message* createNode(void);
  * passed as parameter. this method is intended to 
  * be called once per linked list to be created.
  */
-message* createHead(character data);
+do_message* createHead(message_t data);
 
-void printNodes(message *pHead);
+void printNodes(do_message *pHead);
 /*
  * Name:deleteNode
  * Parameters:
@@ -69,7 +69,7 @@ void printNodes(message *pHead);
  * to be eliminated from the linked list
  * Description: The method goes
  */
-void deleteNode(message * pHead,uint8_t target);
+void deleteNode(do_message * pHead,uint8_t target);
 /*
  * Name: getNode
  * Parameters: node_t pHead
@@ -77,7 +77,7 @@ void deleteNode(message * pHead,uint8_t target);
  * Retrieves the pointer of the target data that is passed to the
  * function.
  */
-message* getNode(message* pHead, uint8_t target);
+do_message* getNode(do_message* pHead, uint8_t target);
     
 
 
