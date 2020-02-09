@@ -43,7 +43,7 @@
 /* Example/Board Header files */
 #include "Board.h"
 #include "taskDefinitions.h"
-#include <DataStructures/ComQueue.h>
+#include <DataStructures/llMessage.h>
 
 /*
  *  ======== mainThread ========
@@ -51,7 +51,9 @@
 void *uartTask(void *arg0)
 {
 
+    do_message *messageHeader = (do_message*)arg0;
 
+    do_message *wp = NULL;
     /* It was necessary to copy the whole result to a local variable to enable retention */
 //    recover = Queue_dequeue(handle);
 //    char result[30];
@@ -60,7 +62,7 @@ void *uartTask(void *arg0)
 //    {
 //        result[o] = recover->packet[o];
 //    }
-
+    wp = getNode(messageHeader, 0);
 
     char        input;
     const char  echoPrompt[] = "Echoing characters:\r\n";
@@ -86,14 +88,13 @@ void *uartTask(void *arg0)
     }
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
-    //UART_write(uart, &result,sizeof(result));
 
     /* Loop forever echoing */
     while (1)
     {
-        UART_read(uart, &input, 1);
-        UART_write(uart, &input, 1);
-        //UART_write(uart, &result,sizeof(result));
+//        UART_read(uart, &input, 1);
+//        UART_write(uart, &input, 1);
+        UART_write(uart, &(wp->message.packet),sizeof(wp->message.packet));
 
         sleep(2);
 

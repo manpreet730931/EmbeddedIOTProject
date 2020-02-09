@@ -11,7 +11,3 @@ struct messageQueue{
 };
 
 typedef struct messageQueue message_t;
-
-//do_message *txLL = NULL;
-//do_message *rxLL = NULL;
-

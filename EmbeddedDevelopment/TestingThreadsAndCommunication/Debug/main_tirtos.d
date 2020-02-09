@@ -83,6 +83,8 @@ main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/
 main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/Board.h
 main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/GPIO.h
 main_tirtos.obj: /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/Tasks/taskDefinitions.h
+main_tirtos.obj: /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/DataStructures/llMessage.h
+main_tirtos.obj: /home/andres/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/string.h
 main_tirtos.obj: /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/DataStructures/ComQueue.h
 main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/knl/Queue.h
 main_tirtos.obj: /home/andres/ti/xdctools_3_51_01_18_core/packages/xdc/runtime/Types.h
@@ -175,6 +177,8 @@ main_tirtos.obj: /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/posi
 /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/Board.h: 
 /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/source/ti/drivers/GPIO.h: 
 /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/Tasks/taskDefinitions.h: 
+/home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/DataStructures/llMessage.h: 
+/home/andres/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/string.h: 
 /home/andres/Documents/EMBT/FinalProject/EmbeddedIOTProject/EmbeddedDevelopment/TestingThreadsAndCommunication/DataStructures/ComQueue.h: 
 /home/andres/ti/simplelink_cc13x0_sdk_3_20_00_23/kernel/tirtos/packages/ti/sysbios/knl/Queue.h: 
 /home/andres/ti/xdctools_3_51_01_18_core/packages/xdc/runtime/Types.h: 
