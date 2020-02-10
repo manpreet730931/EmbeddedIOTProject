@@ -9,7 +9,6 @@
 #include <ti/drivers/PIN.h>
 #include <ti/drivers/GPIO.h>
 
-
 /* Driverlib Header files */
 #include DeviceFamily_constructPath(driverlib/rf_prop_mailbox.h)
 
@@ -21,7 +20,7 @@
 #include "smartrf_settings/smartrf_settings.h"
 
 #include "taskDefinitions.h"
-
+#include <DataStructures/llMessage.h>
 
 /***** Defines *****/
 
@@ -33,8 +32,6 @@
                                    * 1 Header byte (RF_cmdPropRx.rxConf.bIncludeHdr = 0x1)
                                    * Max 30 payload bytes
                                    * 1 status byte (RF_cmdPropRx.rxConf.bAppendStatus = 0x1) */
-
-
 
 /***** Prototypes *****/
 static void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e);
@@ -59,16 +56,20 @@ static rfc_dataEntryGeneral_t* currentDataEntry;
 static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
-
+/* Received packet */
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
+
+
+do_message *wp = NULL;
+do_message *messageHeader = NULL;
 
 /***** Function definitions *****/
 
 void *rxTask(void *arg0)
 {
 
-    //Things to remove after the test
-
+    /* Cast the pointer of the header I will be using for data passing */
+    messageHeader = (do_message*)arg0;
 
     //configuration
 
@@ -192,14 +193,14 @@ void *rxTask(void *arg0)
                 // pool of states defined in rf_mailbox.h
                 while(1);
         }
-
+        int a = 0;
         while(1)
         {
             sleep(1);
         }
 }
 bool state = false;
-
+int i = 0;
 void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
     if (e & RF_EventRxEntryDone)
@@ -224,6 +225,11 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 
         /* Copy the payload + the status byte to the packet variable */
         memcpy(packet, packetDataPointer, (packetLength + 1));
+
+        message_t arrived;
+        memcpy(arrived.packet, packet, sizeof(arrived.packet));
+
+        //wp = addNode(messageHeader, arrived);
 
         RFQueue_nextEntry();
     }

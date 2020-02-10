@@ -50,10 +50,16 @@
 
 #include <Tasks/taskDefinitions.h>
 
+/* Data structures defined for this development */
+#include <DataStructures/llMessage.h>
 
 
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
+
+size_t rxNumber = 0;
+do_message *txLL = NULL;
+do_message *rxLL = NULL;
 
 /*
  *  ======== main ========
@@ -70,6 +76,19 @@ int main(void)
     struct sched_param  priParam;
     int                 retc;
     int                 detachState;
+
+    /* Communication facilities initialization */
+
+    message_t msg;
+    msg.objectID = rxNumber;
+
+   int i = 0;
+   for(i=0;i<30;i++)
+   {
+       msg.packet[i] = i + 48;
+   }
+
+   rxLL = createHead(msg);
 
     /* Call driver init functions */
     Board_init();
@@ -99,7 +118,7 @@ int main(void)
         while(1);
     }
 
-    retc = pthread_create(&thread, &attrs, uartTask, NULL);
+    retc = pthread_create(&thread, &attrs, uartTask, rxLL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);
@@ -145,7 +164,8 @@ int main(void)
      * Rx thread
      */
 
-    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
+    //Send as parameter the handle of the queue I need to pass data around
+    retc = pthread_create(&rxThreadTask, &attrs, rxTask, rxLL);
     if(retc != 0)
     {
         while(1);

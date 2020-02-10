@@ -15,6 +15,7 @@ ORDERED_OBJS += \
 "./ccfg.obj" \
 "./main_tirtos.obj" \
 "./DataStructures/RFQueue.obj" \
+"./DataStructures/llMessage.obj" \
 "./Tasks/LEDManagement.obj" \
 "./Tasks/rxTask.obj" \
 "./Tasks/txTask.obj" \
@@ -179,8 +180,8 @@ TestingThreadsAndCommunication.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "ccfg.obj" "main_tirtos.obj" "DataStructures/RFQueue.obj" "Tasks/LEDManagement.obj" "Tasks/rxTask.obj" "Tasks/txTask.obj" "Tasks/uartecho.obj" "smartrf_settings/smartrf_settings.obj" 
-	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "ccfg.d" "main_tirtos.d" "DataStructures/RFQueue.d" "Tasks/LEDManagement.d" "Tasks/rxTask.d" "Tasks/txTask.d" "Tasks/uartecho.d" "smartrf_settings/smartrf_settings.d" 
+	-$(RM) "CC1310_LAUNCHXL.obj" "CC1310_LAUNCHXL_fxns.obj" "ccfg.obj" "main_tirtos.obj" "DataStructures/RFQueue.obj" "DataStructures/llMessage.obj" "Tasks/LEDManagement.obj" "Tasks/rxTask.obj" "Tasks/txTask.obj" "Tasks/uartecho.obj" "smartrf_settings/smartrf_settings.obj" 
+	-$(RM) "CC1310_LAUNCHXL.d" "CC1310_LAUNCHXL_fxns.d" "ccfg.d" "main_tirtos.d" "DataStructures/RFQueue.d" "DataStructures/llMessage.d" "Tasks/LEDManagement.d" "Tasks/rxTask.d" "Tasks/txTask.d" "Tasks/uartecho.d" "smartrf_settings/smartrf_settings.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
