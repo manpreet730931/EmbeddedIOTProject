@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #define MAX_LENGTH             30 /* The size of the package to hold in the queue */
+const char queuName[] = "ReceiverQueue";
 
 struct messageQueue{
     size_t objectID;
@@ -11,3 +12,11 @@ struct messageQueue{
 };
 
 typedef struct messageQueue message_t;
+
+
+struct queueMessage{
+    Queue_Elem elem;
+    char packet[MAX_LENGTH];
+};
+
+typedef struct queueMessage queueMessage_t;

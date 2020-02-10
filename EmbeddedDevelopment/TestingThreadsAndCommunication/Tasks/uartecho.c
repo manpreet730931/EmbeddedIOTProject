@@ -44,25 +44,26 @@
 #include "Board.h"
 #include "taskDefinitions.h"
 #include <DataStructures/llMessage.h>
-
+#include <mqueue.h>
 /*
  *  ======== mainThread ========
  */
 void *uartTask(void *arg0)
 {
 
-    do_message *messageHeader = (do_message*)arg0;
 
-    do_message *wp = NULL;
-    /* It was necessary to copy the whole result to a local variable to enable retention */
-//    recover = Queue_dequeue(handle);
+//    Queue_Handle pw = (Queue_Handle)arg0;
+
+//    queueMessage_t *recover = NULL;
 //    char result[30];
-//    int o=0;
-//    for(o=0;o<30;o++)
+//
+//    while(!Queue_empty(pw))
 //    {
-//        result[o] = recover->packet[o];
+//        recover = Queue_dequeue(pw);
+//        memcpy(result, recover->packet, sizeof(result));
 //    }
-    wp = getNode(messageHeader, 0);
+
+    /* It was necessary to copy the whole result to a local variable to enable retention */
 
     char        input;
     const char  echoPrompt[] = "Echoing characters:\r\n";
@@ -89,28 +90,25 @@ void *uartTask(void *arg0)
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
 
-    /* To get the content of the linkd list */
 
-    size_t objectID = 0;
+    //Start the receiver of the POSIX queue
+
+    mqd_t mq;
+    struct mq_attr attr;
+
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = 1;
+    attr.mq_msgsize = MAX_LENGTH;
+    attr.mq_curmsgs = 0;
+    mq = mq_open(queuName, O_CREAT | O_RDONLY, 0644, &attr);
+
 
     /* Loop forever echoing */
     while (1)
     {
-        //Obtain node
-        objectID = getLastNode(messageHeader);
-        wp = getNode(messageHeader, objectID);
-
-        UART_write(uart, &(wp->message.packet),sizeof(wp->message.packet));
-
-        //Delete node
-        if(objectID != 0)
-        {
-            //deleteNode(messageHeader, objectID);
-        }
-        //        UART_read(uart, &input, 1);
-        //        UART_write(uart, &input, 1);
-        //usleep(250000);
+        //UART_write( uart,&(result) ,sizeof(result));
+                UART_read(uart, &input, 1);
+                UART_write(uart, &input, 1);
         sleep(2);
-
     }
 }

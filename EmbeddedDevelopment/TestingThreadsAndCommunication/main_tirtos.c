@@ -53,7 +53,6 @@
 /* Data structures defined for this development */
 #include <DataStructures/llMessage.h>
 
-
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
 
@@ -61,9 +60,12 @@ size_t rxNumber = 0;
 do_message *txLL = NULL;
 do_message *rxLL = NULL;
 
+Queue_Handle myQ;
+
 /*
  *  ======== main ========
  */
+
 int main(void)
 {
     //Handles for the threads
@@ -82,13 +84,27 @@ int main(void)
     message_t msg;
     msg.objectID = rxNumber;
 
-   int i = 0;
-   for(i=0;i<30;i++)
-   {
-       msg.packet[i] = i + 48;
-   }
+       int i = 0;
+       for(i=0;i<30;i++)
+       {
+           msg.packet[i] = i + 48;
+       }
 
-   rxLL = createHead(msg);
+       rxLL = createHead(msg);
+
+       queueMessage_t mn;
+       memcpy(mn.packet, msg.packet, sizeof(mn.packet));
+
+       queueMessage_t mn1;
+       memcpy(mn1.packet, msg.packet, sizeof(mn1.packet));
+
+       myQ = Queue_create(NULL,NULL);
+       Queue_enqueue(myQ,&(mn.elem));
+       Queue_enqueue(myQ,&(mn1.elem));
+
+       //queueMessage_t *received = Queue_dequeue(myQ);
+
+       //Queue_enqueue(myQ,&(mn.elem));
 
     /* Call driver init functions */
     Board_init();
@@ -118,7 +134,7 @@ int main(void)
         while(1);
     }
 
-    retc = pthread_create(&thread, &attrs, uartTask, rxLL);
+    retc = pthread_create(&thread, &attrs, uartTask, NULL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);
@@ -165,11 +181,11 @@ int main(void)
      */
 
     //Send as parameter the handle of the queue I need to pass data around
-    retc = pthread_create(&rxThreadTask, &attrs, rxTask, rxLL);
-    if(retc != 0)
-    {
-        while(1);
-    }
+//    retc = pthread_create(&rxThreadTask, &attrs, rxTask, myQ);
+//    if(retc != 0)
+//    {
+//        while(1);
+//    }
 
     /*
      * End Rx Thread

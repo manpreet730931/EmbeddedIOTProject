@@ -62,6 +62,9 @@ static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte i
 
 do_message *wp = NULL;
 do_message *messageHeader = NULL;
+Queue_Handle *pw = NULL;
+
+
 
 /***** Function definitions *****/
 
@@ -69,7 +72,10 @@ void *rxTask(void *arg0)
 {
 
     /* Cast the pointer of the header I will be using for data passing */
-    messageHeader = (do_message*)arg0;
+    //messageHeader = (do_message*)arg0;
+
+    //Set the address of the handle for the queue
+    pw = (Queue_Handle*)Queue_handle;
 
     //configuration
 
@@ -226,10 +232,13 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         /* Copy the payload + the status byte to the packet variable */
         memcpy(packet, packetDataPointer, (packetLength + 1));
 
-        message_t arrived;
-        memcpy(arrived.packet, packet, sizeof(arrived.packet));
+        queueMessage_t newPacket;
+        //message_t arrived;
+        memcpy(newPacket.packet, packet, sizeof(newPacket.packet));
+
 
         //wp = addNode(messageHeader, arrived);
+        //Queue_enqueue(pw, &(newPacket.elem));
 
         RFQueue_nextEntry();
     }
