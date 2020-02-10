@@ -14,17 +14,25 @@ do_message* addNode(do_message* pHead, message_t data)
     //Create new node
     do_message *pNode = createNode();
     pNode->message = data;
-    
+
     //Find the attatchement point for the new node
     //to be inserted
     
+    size_t counter = 1;
+
     do_message *pw = NULL; //working pointer
     pw = pHead;    
     while(pw->pNext != NULL)
     {
+        counter += 1;
         pw = pw->pNext;
     }    
     pw->pNext = pNode;
+    //Make all the ids equal to zero, I will manage this in a different way
+    pw->pNext->message.objectID = counter;
+    //Auto assing a counter to the object ID
+
+
     return pNode;
 }
 
@@ -68,6 +76,7 @@ void deleteNode(do_message* pHead, uint8_t target)
 
 void printNodes(do_message *pHead)
 {
+
 }
 
 do_message* getNode(do_message* pHead, uint8_t target)
@@ -91,4 +100,19 @@ do_message* getNode(do_message* pHead, uint8_t target)
     }
 }
 
+size_t getLastNode(do_message* pHead)
+{
+    do_message* pw = NULL;
+    pw = pHead;
+
+    while(pw->pNext != NULL)
+    {
+        pw = pHead->pNext;
+    }
+    //Making sure we are talking about the the last node.
+    if(pw->pNext == NULL)
+    {
+        return pw->message.objectID;
+    }
+}
 

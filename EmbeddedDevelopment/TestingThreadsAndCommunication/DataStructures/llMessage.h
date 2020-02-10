@@ -79,5 +79,13 @@ void deleteNode(do_message * pHead,uint8_t target);
  */
 do_message* getNode(do_message* pHead, uint8_t target);
     
+/*
+ * Name: getLastNode
+ * Parameters: node_t pHead
+ * Description:
+ * This function will go over all the linked list and will retrieve the ID
+ * of latest node on the list
+ */
 
+size_t getLastNode(do_message* pHead);
 

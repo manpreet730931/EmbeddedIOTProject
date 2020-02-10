@@ -89,13 +89,27 @@ void *uartTask(void *arg0)
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
 
+    /* To get the content of the linkd list */
+
+    size_t objectID = 0;
+
     /* Loop forever echoing */
     while (1)
     {
-//        UART_read(uart, &input, 1);
-//        UART_write(uart, &input, 1);
+        //Obtain node
+        objectID = getLastNode(messageHeader);
+        wp = getNode(messageHeader, objectID);
+
         UART_write(uart, &(wp->message.packet),sizeof(wp->message.packet));
 
+        //Delete node
+        if(objectID != 0)
+        {
+            //deleteNode(messageHeader, objectID);
+        }
+        //        UART_read(uart, &input, 1);
+        //        UART_write(uart, &input, 1);
+        //usleep(250000);
         sleep(2);
 
     }
