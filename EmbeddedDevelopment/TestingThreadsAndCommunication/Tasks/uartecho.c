@@ -93,22 +93,31 @@ void *uartTask(void *arg0)
 
     //Start the receiver of the POSIX queue
 
-    mqd_t mq;
+    mqd_t mq = NULL;
     struct mq_attr attr;
 
     attr.mq_flags = 0;
     attr.mq_maxmsg = 1;
     attr.mq_msgsize = MAX_LENGTH;
     attr.mq_curmsgs = 0;
-    mq = mq_open(queuName, O_CREAT | O_RDONLY, 0644, &attr);
+    mq = mq_open("ReceiverQueue", O_CREAT | O_RDONLY, 0644, &attr);
 
+    char messageReceived[MAX_LENGTH] = NULL;
 
     /* Loop forever echoing */
     while (1)
     {
-        //UART_write( uart,&(result) ,sizeof(result));
-                UART_read(uart, &input, 1);
-                UART_write(uart, &input, 1);
-        sleep(2);
+
+        ssize_t bytes_read;
+        bytes_read = mq_receive(mq, (char *)messageReceived, MAX_LENGTH, NULL);
+        if(bytes_read)
+        {
+            UART_write( uart,&(messageReceived) ,sizeof(messageReceived));
+        }
+
+
+//        UART_read(uart, &input, 1);
+//        UART_write(uart, &input, 1);
+        sleep(1);
     }
 }

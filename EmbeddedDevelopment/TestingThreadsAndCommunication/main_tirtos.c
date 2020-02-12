@@ -90,17 +90,17 @@ int main(void)
            msg.packet[i] = i + 48;
        }
 
-       rxLL = createHead(msg);
-
-       queueMessage_t mn;
-       memcpy(mn.packet, msg.packet, sizeof(mn.packet));
-
-       queueMessage_t mn1;
-       memcpy(mn1.packet, msg.packet, sizeof(mn1.packet));
-
-       myQ = Queue_create(NULL,NULL);
-       Queue_enqueue(myQ,&(mn.elem));
-       Queue_enqueue(myQ,&(mn1.elem));
+//       rxLL = createHead(msg);
+//
+//       queueMessage_t mn;
+//       memcpy(mn.packet, msg.packet, sizeof(mn.packet));
+//
+//       queueMessage_t mn1;
+//       memcpy(mn1.packet, msg.packet, sizeof(mn1.packet));
+//
+//       myQ = Queue_create(NULL,NULL);
+//       Queue_enqueue(myQ,&(mn.elem));
+//       Queue_enqueue(myQ,&(mn1.elem));
 
        //queueMessage_t *received = Queue_dequeue(myQ);
 
@@ -181,11 +181,11 @@ int main(void)
      */
 
     //Send as parameter the handle of the queue I need to pass data around
-//    retc = pthread_create(&rxThreadTask, &attrs, rxTask, myQ);
-//    if(retc != 0)
-//    {
-//        while(1);
-//    }
+    retc = pthread_create(&rxThreadTask, &attrs, rxTask, myQ);
+    if(retc != 0)
+    {
+        while(1);
+    }
 
     /*
      * End Rx Thread

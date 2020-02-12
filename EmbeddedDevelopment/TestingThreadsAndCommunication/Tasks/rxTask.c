@@ -22,6 +22,8 @@
 #include "taskDefinitions.h"
 #include <DataStructures/llMessage.h>
 
+#include "mqueue.h"
+
 /***** Defines *****/
 
 /* Packet RX Configuration */
@@ -232,13 +234,13 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         /* Copy the payload + the status byte to the packet variable */
         memcpy(packet, packetDataPointer, (packetLength + 1));
 
-        queueMessage_t newPacket;
-        //message_t arrived;
-        memcpy(newPacket.packet, packet, sizeof(newPacket.packet));
+        /* Get the information in the received package */
+        char newPacket[MAX_LENGTH] = NULL;
+        memcpy(newPacket, packet, sizeof(newPacket));
 
-
-        //wp = addNode(messageHeader, arrived);
-        //Queue_enqueue(pw, &(newPacket.elem));
+        mqd_t mq = NULL;
+        mq = mq_open("ReceiverQueue", O_WRONLY);
+        mq_send(mq, (char *)&newPacket, MAX_LENGTH, 0);
 
         RFQueue_nextEntry();
     }
