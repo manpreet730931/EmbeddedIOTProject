@@ -58,11 +58,6 @@ static rfc_dataEntryGeneral_t* currentDataEntry;
 static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
-/* Received packet */
-static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
-
-
-
 
 bool state = false;
 mqd_t mq = NULL;
@@ -73,10 +68,6 @@ char newPacket[MAX_LENGTH];
 
 void *rxTask(void *arg0)
 {
-    //Create the Queue to share data
-
-
-
     //configuration
 
     RF_Params rfParams;
@@ -199,10 +190,9 @@ void *rxTask(void *arg0)
                 // pool of states defined in rf_mailbox.h
                 while(1);
         }
-        int a = 0;
+
         while(1)
         {
-            sleep(1);
         }
 
 }

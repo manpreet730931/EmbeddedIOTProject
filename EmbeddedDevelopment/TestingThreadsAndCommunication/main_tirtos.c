@@ -56,10 +56,6 @@
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
 
-size_t rxNumber = 0;
-do_message *txLL = NULL;
-do_message *rxLL = NULL;
-
 Queue_Handle myQ;
 
 /*
@@ -83,30 +79,6 @@ int main(void)
 
     /* Communication facilities initialization */
 
-    message_t msg;
-    msg.objectID = rxNumber;
-
-       int i = 0;
-       for(i=0;i<30;i++)
-       {
-           msg.packet[i] = i + 48;
-       }
-
-//       rxLL = createHead(msg);
-//
-//       queueMessage_t mn;
-//       memcpy(mn.packet, msg.packet, sizeof(mn.packet));
-//
-//       queueMessage_t mn1;
-//       memcpy(mn1.packet, msg.packet, sizeof(mn1.packet));
-//
-//       myQ = Queue_create(NULL,NULL);
-//       Queue_enqueue(myQ,&(mn.elem));
-//       Queue_enqueue(myQ,&(mn1.elem));
-
-       //queueMessage_t *received = Queue_dequeue(myQ);
-
-       //Queue_enqueue(myQ,&(mn.elem));
 
     /* Call driver init functions */
     Board_init();
