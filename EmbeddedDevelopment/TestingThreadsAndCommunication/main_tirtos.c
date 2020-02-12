@@ -73,7 +73,9 @@ int main(void)
     pthread_t           thread;
     pthread_t           txThreadTask;
     pthread_t           rxThreadTask;
-    //These definitions are used globally amoung the threads
+
+    //These definitions are used globally among the threads
+
     pthread_attr_t      attrs;
     struct sched_param  priParam;
     int                 retc;
@@ -143,27 +145,14 @@ int main(void)
      * End Thread 1
      */
 
-    /*
-     * Thread 2
-     */
-//    priParam.sched_priority = 2;
-//    pthread_attr_setschedparam(&attrs, &priParam);
-//    retc = pthread_create(&ledThread,&attrs,ledTask,NULL);
-//    if(retc != 0)
-//    {
-//        //Failed creating this thread
-//        while(1);
-//    }
-    /*
-     * End Thread 2
-     */
+
 
     /*
      * TX thread
      */
 
-//    priParam.sched_priority = 2;
-//    pthread_attr_setschedparam(&attrs, &priParam);
+    priParam.sched_priority = 2;
+    pthread_attr_setschedparam(&attrs, &priParam);
 //
 //    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
 //    if(retc != 0)
@@ -189,6 +178,22 @@ int main(void)
 
     /*
      * End Rx Thread
+     */
+
+
+    /*
+     * Thread 2
+     */
+//    priParam.sched_priority = 2;
+//    pthread_attr_setschedparam(&attrs, &priParam);
+//    retc = pthread_create(&ledThread,&attrs,ledTask,NULL);
+//    if(retc != 0)
+//    {
+//        //Failed creating this thread
+//        while(1);
+//    }
+    /*
+     * End Thread 2
      */
 
     BIOS_start();

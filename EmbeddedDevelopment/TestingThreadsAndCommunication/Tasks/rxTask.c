@@ -62,22 +62,20 @@ static uint8_t* packetDataPointer;
 static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
 
 
-do_message *wp = NULL;
-do_message *messageHeader = NULL;
-Queue_Handle *pw = NULL;
 
+
+bool state = false;
+mqd_t mq = NULL;
+char newPacket[MAX_LENGTH];
 
 
 /***** Function definitions *****/
 
 void *rxTask(void *arg0)
 {
+    //Create the Queue to share data
 
-    /* Cast the pointer of the header I will be using for data passing */
-    //messageHeader = (do_message*)arg0;
 
-    //Set the address of the handle for the queue
-    pw = (Queue_Handle*)Queue_handle;
 
     //configuration
 
@@ -206,9 +204,8 @@ void *rxTask(void *arg0)
         {
             sleep(1);
         }
+
 }
-bool state = false;
-int i = 0;
 void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
     if (e & RF_EventRxEntryDone)
@@ -232,14 +229,16 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
         packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1);
 
         /* Copy the payload + the status byte to the packet variable */
-        memcpy(packet, packetDataPointer, (packetLength + 1));
+        memcpy(newPacket, packetDataPointer, (packetLength + 1));
 
+        //memcpy(packet, packetDataPointer, (packetLength + 1));
         /* Get the information in the received package */
-        char newPacket[MAX_LENGTH] = NULL;
-        memcpy(newPacket, packet, sizeof(newPacket));
+        //memcpy(newPacket, packet, sizeof(newPacket));
 
-        mqd_t mq = NULL;
-        mq = mq_open("ReceiverQueue", O_WRONLY);
+        if(mq==NULL)
+        {
+            mq = mq_open("ReceiverQueue", O_WRONLY);
+        }
         mq_send(mq, (char *)&newPacket, MAX_LENGTH, 0);
 
         RFQueue_nextEntry();

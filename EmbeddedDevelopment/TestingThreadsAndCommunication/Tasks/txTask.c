@@ -77,7 +77,7 @@ void *txTask(void *arg0)
         uint8_t i;
         for (i = 2; i < PAYLOAD_LENGTH; i++)
         {
-            packet[i] = rand();
+            packet[i] = (rand() % 50) + 48 ;
         }
 
         /* Send packet */

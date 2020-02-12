@@ -102,22 +102,18 @@ void *uartTask(void *arg0)
     attr.mq_curmsgs = 0;
     mq = mq_open("ReceiverQueue", O_CREAT | O_RDONLY, 0644, &attr);
 
-    char messageReceived[MAX_LENGTH] = NULL;
-
+    char messageReceived[MAX_LENGTH];
+    ssize_t bytes_read;
     /* Loop forever echoing */
     while (1)
     {
-
-        ssize_t bytes_read;
         bytes_read = mq_receive(mq, (char *)messageReceived, MAX_LENGTH, NULL);
         if(bytes_read)
         {
             UART_write( uart,&(messageReceived) ,sizeof(messageReceived));
         }
-
-
-//        UART_read(uart, &input, 1);
-//        UART_write(uart, &input, 1);
-        sleep(1);
+//                UART_read(uart, &input, 1);
+//                UART_write(uart, &input, 1);
+        usleep(5000);
     }
 }
