@@ -13,8 +13,10 @@
 /* Board Header files */
 #include "Board.h"
 #include "smartrf_settings/smartrf_settings.h"
-
+#include <DataStructures/llMessage.h>
 #include "taskDefinitions.h"
+
+#include "mqueue.h"
 
 
 /***** Defines *****/
@@ -35,10 +37,6 @@
 /***** Variable declarations *****/
 static RF_Object rfObject;
 static RF_Handle rfHandle;
-
-/* Pin driver handle */
-static PIN_Handle ledPinHandle;
-static PIN_State ledPinState;
 
 static uint8_t packet[PAYLOAD_LENGTH];
 static uint16_t seqNumber;
@@ -62,23 +60,40 @@ void *txTask(void *arg0)
     RF_cmdPropTx.pPkt = packet;
     RF_cmdPropTx.startTrigger.triggerType = TRIG_NOW;
 
-
     rfHandle = RF_open(&rfObject, &RF_prop, (RF_RadioSetup*)&RF_cmdPropRadioDivSetup, &rfParams);
-
 
     /* Set the frequency */
     RF_postCmd(rfHandle, (RF_Op*)&RF_cmdFs, RF_PriorityNormal, NULL, 0);
     bool state = false;
+
+    mqd_t tQm = NULL;
+    struct mq_attr attr;
+
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = 1;
+    attr.mq_msgsize = MAX_LENGTH;
+    attr.mq_curmsgs = 0;
+    tQm = mq_open(receiveQueue, O_CREAT | O_RDONLY, 0644, &attr);
+
+    char messageReceived[MAX_LENGTH];
+    ssize_t bytes_read;
+
     while(1)
     {
         /* Create packet with incrementing sequence number and random payload */
-        packet[0] = (uint8_t)(seqNumber >> 8);
+        /*packet[0] = (uint8_t)(seqNumber >> 8);
         packet[1] = (uint8_t)(seqNumber++);
         uint8_t i;
         for (i = 2; i < PAYLOAD_LENGTH; i++)
         {
-            packet[i] = rand();
-        }
+            packet[i] = (rand() % 50) + 48 ;
+        }*/
+
+        bytes_read = mq_receive(tQm, (char *)messageReceived, MAX_LENGTH, NULL);
+        memcpy(packet,messageReceived , sizeof(packet));
+
+        if(bytes_read)
+        {
 
         /* Send packet */
         RF_EventMask terminationReason =
@@ -139,26 +154,29 @@ void *txTask(void *arg0)
                 while(1);
         }
 
-    GPIO_write(Board_GPIO_LED1, state);
-    if(state)
-    {
-        state = false;
-    }
-    else
-    {
-        state = true;
-    }
-    /* Power down the radio */
-    RF_yield(rfHandle);
-
-    #ifdef POWER_MEASUREMENT
-            /* Sleep for PACKET_INTERVAL s */
-            sleep(PACKET_INTERVAL);
-    #else
-            /* Sleep for PACKET_INTERVAL us */
-            usleep(PACKET_INTERVAL);
-    #endif
-
+        GPIO_write(Board_GPIO_LED1, state);
+        if(state)
+        {
+            state = false;
         }
+        else
+        {
+            state = true;
+        }
+        /* Power down the radio */
+        RF_yield(rfHandle);
 
+        #ifdef POWER_MEASUREMENT
+                /* Sleep for PACKET_INTERVAL s */
+                sleep(PACKET_INTERVAL);
+        #else
+                /* Sleep for PACKET_INTERVAL us */
+                usleep(PACKET_INTERVAL);
+        #endif
+        }
+        else
+        {
+            usleep(PACKET_INTERVAL);
+        }
+    }
 }

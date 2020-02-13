@@ -22,6 +22,8 @@
 #include "taskDefinitions.h"
 #include <DataStructures/llMessage.h>
 
+#include "mqueue.h"
+
 /***** Defines *****/
 
 /* Packet RX Configuration */
@@ -56,21 +58,16 @@ static rfc_dataEntryGeneral_t* currentDataEntry;
 static uint8_t packetLength;
 static uint8_t* packetDataPointer;
 
-/* Received packet */
-static uint8_t packet[MAX_LENGTH + NUM_APPENDED_BYTES - 1]; /* The length byte is stored in a separate variable */
 
+bool state = false;
+mqd_t mq = NULL;
+char newPacket[MAX_LENGTH];
 
-do_message *wp = NULL;
-do_message *messageHeader = NULL;
 
 /***** Function definitions *****/
 
 void *rxTask(void *arg0)
 {
-
-    /* Cast the pointer of the header I will be using for data passing */
-    messageHeader = (do_message*)arg0;
-
     //configuration
 
     RF_Params rfParams;
@@ -193,14 +190,12 @@ void *rxTask(void *arg0)
                 // pool of states defined in rf_mailbox.h
                 while(1);
         }
-        int a = 0;
+
         while(1)
         {
-            sleep(1);
         }
+
 }
-bool state = false;
-int i = 0;
 void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 {
     if (e & RF_EventRxEntryDone)
@@ -216,20 +211,19 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
        }
         /* Get current unhandled data entry */
         currentDataEntry = RFQueue_getDataEntry();
-
         /* Handle the packet data, located at &currentDataEntry->data:
          * - Length is the first byte with the current configuration
          * - Data starts from the second byte */
         packetLength      = *(uint8_t*)(&currentDataEntry->data);
         packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1);
-
         /* Copy the payload + the status byte to the packet variable */
-        memcpy(packet, packetDataPointer, (packetLength + 1));
+        memcpy(newPacket, packetDataPointer, (packetLength + 1));
 
-        message_t arrived;
-        memcpy(arrived.packet, packet, sizeof(arrived.packet));
-
-        //wp = addNode(messageHeader, arrived);
+        if(mq==NULL)
+        {
+            mq = mq_open(receiveQueue, O_WRONLY);
+        }
+        mq_send(mq, (char *)&newPacket, MAX_LENGTH, 0);
 
         RFQueue_nextEntry();
     }

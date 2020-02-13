@@ -70,7 +70,7 @@ void deleteNode(do_message* pHead, uint8_t target)
     }
     else
     {
-        printf("Node not found\n");
+        //printf("Node not found\n");
     }
 }
 

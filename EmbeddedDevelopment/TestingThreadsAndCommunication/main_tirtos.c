@@ -54,16 +54,14 @@
 #include <DataStructures/llMessage.h>
 
 
+
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
-
-size_t rxNumber = 0;
-do_message *txLL = NULL;
-do_message *rxLL = NULL;
 
 /*
  *  ======== main ========
  */
+
 int main(void)
 {
     //Handles for the threads
@@ -71,7 +69,9 @@ int main(void)
     pthread_t           thread;
     pthread_t           txThreadTask;
     pthread_t           rxThreadTask;
-    //These definitions are used globally amoung the threads
+
+    //These definitions are used globally among the threads
+
     pthread_attr_t      attrs;
     struct sched_param  priParam;
     int                 retc;
@@ -79,16 +79,6 @@ int main(void)
 
     /* Communication facilities initialization */
 
-    message_t msg;
-    msg.objectID = rxNumber;
-
-   int i = 0;
-   for(i=0;i<30;i++)
-   {
-       msg.packet[i] = i + 48;
-   }
-
-   rxLL = createHead(msg);
 
     /* Call driver init functions */
     Board_init();
@@ -118,7 +108,7 @@ int main(void)
         while(1);
     }
 
-    retc = pthread_create(&thread, &attrs, uartTask, rxLL);
+    retc = pthread_create(&thread, &attrs, uartTask, NULL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);
@@ -126,6 +116,42 @@ int main(void)
     /*
      * End Thread 1
      */
+
+
+
+    /*
+     * TX thread
+     */
+
+    priParam.sched_priority = 2;
+    pthread_attr_setschedparam(&attrs, &priParam);
+
+    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
+    if(retc != 0)
+    {
+        //Failed to initialize the task
+        while(1);
+    }
+    /*
+     * End TX thread
+     */
+
+
+    /*
+     * Rx thread
+     */
+
+    //Send as parameter the handle of the queue I need to pass data around
+    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
+    if(retc != 0)
+    {
+        while(1);
+    }
+
+    /*
+     * End Rx Thread
+     */
+
 
     /*
      * Thread 2
@@ -140,39 +166,6 @@ int main(void)
 //    }
     /*
      * End Thread 2
-     */
-
-    /*
-     * TX thread
-     */
-
-//    priParam.sched_priority = 2;
-//    pthread_attr_setschedparam(&attrs, &priParam);
-//
-//    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
-//    if(retc != 0)
-//    {
-//        //Failed to initialize the task
-//        while(1);
-//    }
-    /*
-     * End TX thread
-     */
-
-
-    /*
-     * Rx thread
-     */
-
-    //Send as parameter the handle of the queue I need to pass data around
-    retc = pthread_create(&rxThreadTask, &attrs, rxTask, rxLL);
-    if(retc != 0)
-    {
-        while(1);
-    }
-
-    /*
-     * End Rx Thread
      */
 
     BIOS_start();

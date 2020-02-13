@@ -44,26 +44,20 @@
 #include "Board.h"
 #include "taskDefinitions.h"
 #include <DataStructures/llMessage.h>
+#include <DataStructures/circularBuffer.h>
+#include <mqueue.h>
 
+
+void uartReadCallback();
+
+
+char BufferTotal[MAX_LENGTH];
+mqd_t tQm = NULL;
 /*
  *  ======== mainThread ========
  */
 void *uartTask(void *arg0)
 {
-
-    do_message *messageHeader = (do_message*)arg0;
-
-    do_message *wp = NULL;
-    /* It was necessary to copy the whole result to a local variable to enable retention */
-//    recover = Queue_dequeue(handle);
-//    char result[30];
-//    int o=0;
-//    for(o=0;o<30;o++)
-//    {
-//        result[o] = recover->packet[o];
-//    }
-    wp = getNode(messageHeader, 0);
-
     char        input;
     const char  echoPrompt[] = "Echoing characters:\r\n";
     UART_Handle uart;
@@ -76,9 +70,12 @@ void *uartTask(void *arg0)
     UART_Params_init(&uartParams);
     uartParams.writeDataMode = UART_DATA_BINARY;
     uartParams.readDataMode = UART_DATA_BINARY;
-    uartParams.readReturnMode = UART_RETURN_FULL;
     uartParams.readEcho = UART_ECHO_OFF;
     uartParams.baudRate = 115200;
+    //uartParams.readReturnMode = UART_RETURN_FULL;
+    uartParams.readReturnMode = UART_RETURN_NEWLINE;
+    uartParams.readCallback = &uartReadCallback;
+    uartParams.readMode = UART_MODE_CALLBACK;
 
     uart = UART_open(Board_UART0, &uartParams);
 
@@ -89,28 +86,61 @@ void *uartTask(void *arg0)
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
 
-    /* To get the content of the linkd list */
+    /* Initialize the receiving queue to get data from the Rx */
 
-    size_t objectID = 0;
+    mqd_t rQm = NULL;
+    struct mq_attr attr;
 
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = 1;
+    attr.mq_msgsize = MAX_LENGTH;
+    attr.mq_curmsgs = 0;
+    rQm = mq_open(receiveQueue, O_CREAT | O_RDONLY, 0644, &attr);
+
+    char messageReceived[MAX_LENGTH];
+    ssize_t bytes_read;
     /* Loop forever echoing */
+
     while (1)
     {
-        //Obtain node
-        objectID = getLastNode(messageHeader);
-        wp = getNode(messageHeader, objectID);
-
-        UART_write(uart, &(wp->message.packet),sizeof(wp->message.packet));
-
-        //Delete node
-        if(objectID != 0)
+        bytes_read = mq_receive(rQm, (char *)messageReceived, MAX_LENGTH, NULL);
+        if(bytes_read)
         {
-            //deleteNode(messageHeader, objectID);
+            UART_write( uart,&(messageReceived) ,sizeof(messageReceived));
         }
-        //        UART_read(uart, &input, 1);
-        //        UART_write(uart, &input, 1);
-        //usleep(250000);
-        sleep(2);
+        UART_read(uart, &input, 1);
 
+        usleep(50);
+    }
+}
+//This callback is called once the read number is completed
+int i = 0;
+uint8_t data;
+void uartReadCallback(UART_Handle handle, void *rxBuf, size_t size)
+{
+    char *Buffer = (char*)rxBuf;
+
+    //Creates the instance if it does not exist
+    if(tQm==NULL)
+    {
+       tQm = mq_open(sendQueue, O_WRONLY);
+    }
+
+    if(i<MAX_LENGTH)
+    {
+        BufferTotal[i] = *Buffer;
+        i++;
+    }
+    else
+    {
+        UART_write(handle, &(BufferTotal), sizeof(BufferTotal));
+        mq_send(tQm, (char *)&BufferTotal, MAX_LENGTH, 0);
+        i=0;
+    }
+    if(*(Buffer)==13)
+    {
+        UART_write(handle, &(BufferTotal), sizeof(BufferTotal));
+        mq_send(tQm, (char *)&BufferTotal, MAX_LENGTH, 0);
+        i=0;
     }
 }
