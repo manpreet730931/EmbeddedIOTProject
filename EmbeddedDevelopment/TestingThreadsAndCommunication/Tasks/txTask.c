@@ -36,10 +36,6 @@
 static RF_Object rfObject;
 static RF_Handle rfHandle;
 
-/* Pin driver handle */
-static PIN_Handle ledPinHandle;
-static PIN_State ledPinState;
-
 static uint8_t packet[PAYLOAD_LENGTH];
 static uint16_t seqNumber;
 

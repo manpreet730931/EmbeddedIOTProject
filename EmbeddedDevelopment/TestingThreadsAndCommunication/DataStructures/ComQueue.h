@@ -12,11 +12,3 @@ struct messageQueue{
 };
 
 typedef struct messageQueue message_t;
-
-
-struct queueMessage{
-
-    char packet[MAX_LENGTH];
-};
-
-typedef struct queueMessage queueMessage_t;

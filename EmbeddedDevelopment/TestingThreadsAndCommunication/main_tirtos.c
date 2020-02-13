@@ -53,10 +53,10 @@
 /* Data structures defined for this development */
 #include <DataStructures/llMessage.h>
 
+
+
 /* Stack size in bytes */
 #define THREADSTACKSIZE    1024
-
-Queue_Handle myQ;
 
 /*
  *  ======== main ========
@@ -142,7 +142,7 @@ int main(void)
      */
 
     //Send as parameter the handle of the queue I need to pass data around
-    retc = pthread_create(&rxThreadTask, &attrs, rxTask, myQ);
+    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
     if(retc != 0)
     {
         while(1);

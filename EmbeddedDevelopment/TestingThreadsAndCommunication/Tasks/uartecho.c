@@ -44,27 +44,20 @@
 #include "Board.h"
 #include "taskDefinitions.h"
 #include <DataStructures/llMessage.h>
+#include <DataStructures/circularBuffer.h>
 #include <mqueue.h>
+
+
+void uartReadCallback();
+
+CIRC_BBUF_DEF(my_circ_buf, 2);
+char BufferTotal[MAX_LENGTH];
+
 /*
  *  ======== mainThread ========
  */
 void *uartTask(void *arg0)
 {
-
-
-//    Queue_Handle pw = (Queue_Handle)arg0;
-
-//    queueMessage_t *recover = NULL;
-//    char result[30];
-//
-//    while(!Queue_empty(pw))
-//    {
-//        recover = Queue_dequeue(pw);
-//        memcpy(result, recover->packet, sizeof(result));
-//    }
-
-    /* It was necessary to copy the whole result to a local variable to enable retention */
-
     char        input;
     const char  echoPrompt[] = "Echoing characters:\r\n";
     UART_Handle uart;
@@ -77,9 +70,12 @@ void *uartTask(void *arg0)
     UART_Params_init(&uartParams);
     uartParams.writeDataMode = UART_DATA_BINARY;
     uartParams.readDataMode = UART_DATA_BINARY;
-    uartParams.readReturnMode = UART_RETURN_FULL;
     uartParams.readEcho = UART_ECHO_OFF;
     uartParams.baudRate = 115200;
+    //uartParams.readReturnMode = UART_RETURN_FULL;
+    uartParams.readReturnMode = UART_RETURN_NEWLINE;
+    uartParams.readCallback = &uartReadCallback;
+    uartParams.readMode = UART_MODE_CALLBACK;
 
     uart = UART_open(Board_UART0, &uartParams);
 
@@ -90,9 +86,6 @@ void *uartTask(void *arg0)
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
 
-
-    //Start the receiver of the POSIX queue
-
     mqd_t mq = NULL;
     struct mq_attr attr;
 
@@ -100,11 +93,14 @@ void *uartTask(void *arg0)
     attr.mq_maxmsg = 1;
     attr.mq_msgsize = MAX_LENGTH;
     attr.mq_curmsgs = 0;
-    mq = mq_open("ReceiverQueue", O_CREAT | O_RDONLY, 0644, &attr);
+    mq = mq_open(queuName, O_CREAT | O_RDONLY, 0644, &attr);
 
     char messageReceived[MAX_LENGTH];
     ssize_t bytes_read;
     /* Loop forever echoing */
+
+
+
     while (1)
     {
         bytes_read = mq_receive(mq, (char *)messageReceived, MAX_LENGTH, NULL);
@@ -112,8 +108,31 @@ void *uartTask(void *arg0)
         {
             UART_write( uart,&(messageReceived) ,sizeof(messageReceived));
         }
-//                UART_read(uart, &input, 1);
-//                UART_write(uart, &input, 1);
+
+        UART_read(uart, &input, 1);
+
         usleep(5000);
+    }
+}
+
+//This callback is called once the read number is completed
+
+int i = 0;
+uint8_t data;
+void uartReadCallback(UART_Handle handle, void *rxBuf, size_t size)
+{
+    char *Buffer = (char*)rxBuf;
+
+    circularBufferPush(&my_circ_buf, *(Buffer));
+
+    if(*(Buffer)==13)
+    {
+        for(i=0;i<MAX_LENGTH;i++)
+        {
+            circ_bbuf_pop(&my_circ_buf, &data);
+            BufferTotal[i] = data;
+        }
+        UART_write(handle, &(BufferTotal), sizeof(BufferTotal));
+        UART_write(handle, rxBuf, size);
     }
 }

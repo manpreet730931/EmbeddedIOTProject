@@ -227,7 +227,7 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
 
         if(mq==NULL)
         {
-            mq = mq_open("ReceiverQueue", O_WRONLY);
+            mq = mq_open(queuName, O_WRONLY);
         }
         mq_send(mq, (char *)&newPacket, MAX_LENGTH, 0);
 
