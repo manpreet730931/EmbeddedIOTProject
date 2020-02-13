@@ -50,9 +50,9 @@
 
 void uartReadCallback();
 
-CIRC_BBUF_DEF(my_circ_buf, 2);
-char BufferTotal[MAX_LENGTH];
 
+char BufferTotal[MAX_LENGTH];
+mqd_t tQm = NULL;
 /*
  *  ======== mainThread ========
  */
@@ -86,53 +86,61 @@ void *uartTask(void *arg0)
 
     UART_write(uart, echoPrompt, sizeof(echoPrompt));
 
-    mqd_t mq = NULL;
+    /* Initialize the receiving queue to get data from the Rx */
+
+    mqd_t rQm = NULL;
     struct mq_attr attr;
 
     attr.mq_flags = 0;
     attr.mq_maxmsg = 1;
     attr.mq_msgsize = MAX_LENGTH;
     attr.mq_curmsgs = 0;
-    mq = mq_open(queuName, O_CREAT | O_RDONLY, 0644, &attr);
+    rQm = mq_open(receiveQueue, O_CREAT | O_RDONLY, 0644, &attr);
 
     char messageReceived[MAX_LENGTH];
     ssize_t bytes_read;
     /* Loop forever echoing */
 
-
-
     while (1)
     {
-        bytes_read = mq_receive(mq, (char *)messageReceived, MAX_LENGTH, NULL);
+        bytes_read = mq_receive(rQm, (char *)messageReceived, MAX_LENGTH, NULL);
         if(bytes_read)
         {
             UART_write( uart,&(messageReceived) ,sizeof(messageReceived));
         }
-
         UART_read(uart, &input, 1);
 
-        usleep(5000);
+        usleep(50);
     }
 }
-
 //This callback is called once the read number is completed
-
 int i = 0;
 uint8_t data;
 void uartReadCallback(UART_Handle handle, void *rxBuf, size_t size)
 {
     char *Buffer = (char*)rxBuf;
 
-    circularBufferPush(&my_circ_buf, *(Buffer));
+    //Creates the instance if it does not exist
+    if(tQm==NULL)
+    {
+       tQm = mq_open(sendQueue, O_WRONLY);
+    }
 
+    if(i<MAX_LENGTH)
+    {
+        BufferTotal[i] = *Buffer;
+        i++;
+    }
+    else
+    {
+        UART_write(handle, &(BufferTotal), sizeof(BufferTotal));
+        mq_send(tQm, (char *)&BufferTotal, MAX_LENGTH, 0);
+        i=0;
+    }
     if(*(Buffer)==13)
     {
-        for(i=0;i<MAX_LENGTH;i++)
-        {
-            circ_bbuf_pop(&my_circ_buf, &data);
-            BufferTotal[i] = data;
-        }
         UART_write(handle, &(BufferTotal), sizeof(BufferTotal));
-        UART_write(handle, rxBuf, size);
+        mq_send(tQm, (char *)&BufferTotal, MAX_LENGTH, 0);
+        i=0;
     }
 }

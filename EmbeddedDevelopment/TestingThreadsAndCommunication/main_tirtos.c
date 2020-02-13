@@ -125,13 +125,13 @@ int main(void)
 
     priParam.sched_priority = 2;
     pthread_attr_setschedparam(&attrs, &priParam);
-//
-//    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
-//    if(retc != 0)
-//    {
-//        //Failed to initialize the task
-//        while(1);
-//    }
+
+    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
+    if(retc != 0)
+    {
+        //Failed to initialize the task
+        while(1);
+    }
     /*
      * End TX thread
      */

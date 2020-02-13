@@ -4,7 +4,8 @@
 #include <unistd.h>
 
 #define MAX_LENGTH             30 /* The size of the package to hold in the queue */
-#define queuName               "ReceiverQueue"
+#define receiveQueue           "ReceiverQueue"
+#define sendQueue              "SendQueue"
 
 struct messageQueue{
     size_t objectID;

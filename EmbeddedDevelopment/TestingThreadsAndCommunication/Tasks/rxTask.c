@@ -211,23 +211,17 @@ void callback(RF_Handle h, RF_CmdHandle ch, RF_EventMask e)
        }
         /* Get current unhandled data entry */
         currentDataEntry = RFQueue_getDataEntry();
-
         /* Handle the packet data, located at &currentDataEntry->data:
          * - Length is the first byte with the current configuration
          * - Data starts from the second byte */
         packetLength      = *(uint8_t*)(&currentDataEntry->data);
         packetDataPointer = (uint8_t*)(&currentDataEntry->data + 1);
-
         /* Copy the payload + the status byte to the packet variable */
         memcpy(newPacket, packetDataPointer, (packetLength + 1));
 
-        //memcpy(packet, packetDataPointer, (packetLength + 1));
-        /* Get the information in the received package */
-        //memcpy(newPacket, packet, sizeof(newPacket));
-
         if(mq==NULL)
         {
-            mq = mq_open(queuName, O_WRONLY);
+            mq = mq_open(receiveQueue, O_WRONLY);
         }
         mq_send(mq, (char *)&newPacket, MAX_LENGTH, 0);
 
