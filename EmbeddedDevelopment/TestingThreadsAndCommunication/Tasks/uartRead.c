@@ -17,7 +17,6 @@ void *uartReadTask(void *arg)
 {
     //Cast the argument into something that is
     //known
-
     mqd_t mq = NULL;
 
     UART_Handle uart = (UART_Handle)arg;
@@ -25,14 +24,14 @@ void *uartReadTask(void *arg)
 
     while(1)
     {
-        UART_read(uart, messageReceived, 1);//sizeof(messageReceived));
+        UART_read(uart, messageReceived, sizeof(messageReceived));
 
         if(mq==NULL)
         {
-            mq = mq_open(receiveQueue, O_WRONLY);
+            mq = mq_open(sendQueue, O_WRONLY);
         }
         mq_send(mq, (char *)&messageReceived, MAX_LENGTH, 0);
 
-        usleep(50);
+        usleep(5000);
     }
 }

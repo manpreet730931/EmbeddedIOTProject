@@ -43,6 +43,6 @@ void *uartWriteTask(void *handle)
         {
             UART_write(uart,&(messageReceived) ,sizeof(messageReceived));
         }
-        usleep(50);
+        usleep(5000);
     }
 }

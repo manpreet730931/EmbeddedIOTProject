@@ -121,50 +121,6 @@ int main(void)
     priParam.sched_priority = 2;
     pthread_attr_setschedparam(&attrs, &priParam);
 
-//    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
-//    if(retc != 0)
-//    {
-//        //Failed to initialize the task
-//        while(1);
-//    }
-    /*
-     * End TX thread
-     */
-
-
-    /*
-     * Rx thread
-     */
-
-    //Send as parameter the handle of the queue I need to pass data around
-    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
-    if(retc != 0)
-    {
-        while(1);
-    }
-
-    /*
-     * End Rx Thread
-     */
-
-
-
-    /*
-     * UART Write Task
-     */
-
-    //Send as parameter the handle of the queue I need to pass data around
-    retc = pthread_create(&uartWriteThread, &attrs, uartWriteTask, uart);
-    if(retc != 0)
-    {
-        while(1);
-    }
-
-    /*
-     * End UART Write Task
-     */
-
-
     /*
      * UART Read Task
      */
@@ -180,6 +136,53 @@ int main(void)
      * End UART Read Task
      */
 
+
+    priParam.sched_priority = 2;
+    pthread_attr_setschedparam(&attrs, &priParam);
+      /*
+       * UART Write Task
+       */
+
+      //Send as parameter the handle of the queue I need to pass data around
+      retc = pthread_create(&uartWriteThread, &attrs, uartWriteTask, uart);
+      if(retc != 0)
+      {
+          while(1);
+      }
+
+      /*
+       * End UART Write Task
+       */
+
+
+     priParam.sched_priority = 1;
+     pthread_attr_setschedparam(&attrs, &priParam);
+
+     retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
+     if(retc != 0)
+     {
+         //Failed to initialize the task
+         while(1);
+     }
+     /*
+      * End TX thread
+      */
+
+
+     /*
+      * Rx thread
+      */
+
+     //Send as parameter the handle of the queue I need to pass data around
+     retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
+     if(retc != 0)
+     {
+         //while(1);
+     }
+
+     /*
+      * End Rx Thread
+      */
 
 
     /*

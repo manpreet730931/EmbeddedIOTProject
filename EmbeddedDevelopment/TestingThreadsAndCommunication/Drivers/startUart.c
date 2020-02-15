@@ -15,6 +15,7 @@ uint8_t startUART(UART_Handle *uart)
     uartParams.readReturnMode = UART_RETURN_NEWLINE;
     uartParams.readMode = UART_MODE_BLOCKING;
 
+
     *uart = UART_open(Board_UART0, &uartParams);
 
     if (uart == NULL) {
