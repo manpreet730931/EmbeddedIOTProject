@@ -73,7 +73,7 @@ void *txTask(void *arg0)
     attr.mq_maxmsg = 1;
     attr.mq_msgsize = MAX_LENGTH;
     attr.mq_curmsgs = 0;
-    tQm = mq_open(receiveQueue, O_CREAT | O_RDONLY, 0644, &attr);
+    tQm = mq_open(sendQueue, O_CREAT | O_RDONLY, 0644, &attr);
 
     char messageReceived[MAX_LENGTH];
     ssize_t bytes_read;
@@ -81,16 +81,16 @@ void *txTask(void *arg0)
     while(1)
     {
         /* Create packet with incrementing sequence number and random payload */
-        packet[0] = (uint8_t)(seqNumber >> 8);
-        packet[1] = (uint8_t)(seqNumber++);
-        uint8_t i;
-        for (i = 2; i < PAYLOAD_LENGTH; i++)
-        {
-            packet[i] = (rand() % 50) + 48 ;
-        }
+//        packet[0] = (uint8_t)(seqNumber >> 8);
+//        packet[1] = (uint8_t)(seqNumber++);
+//        uint8_t i;
+//        for (i = 2; i < PAYLOAD_LENGTH; i++)
+//        {
+//            packet[i] = (rand() % 50) + 48 ;
+//        }
 
-//        bytes_read = mq_receive(tQm, (char *)messageReceived, MAX_LENGTH, NULL);
-//        memcpy(packet,messageReceived , sizeof(packet));
+        bytes_read = mq_receive(tQm, (char *)messageReceived, MAX_LENGTH, NULL);
+        memcpy(packet,messageReceived , sizeof(packet));
 
         if(bytes_read)
         {

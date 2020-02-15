@@ -47,11 +47,15 @@
 #include <ti/drivers/GPIO.h>
 
 /*Tasks include files*/
-
 #include <Tasks/taskDefinitions.h>
+
+/*Driver initialization files*/
+#include <Drivers/startUart.h>
+
 
 /* Data structures defined for this development */
 #include <DataStructures/llMessage.h>
+
 
 
 
@@ -66,9 +70,13 @@ int main(void)
 {
     //Handles for the threads
     pthread_t           ledThread;
-    pthread_t           thread;
+    pthread_t           uartReadThread;
+    pthread_t           uartWriteThread;
     pthread_t           txThreadTask;
     pthread_t           rxThreadTask;
+
+    //Handle for drivers
+    UART_Handle uart;
 
     //These definitions are used globally among the threads
 
@@ -83,10 +91,9 @@ int main(void)
     /* Call driver init functions */
     Board_init();
     GPIO_init();
-
-    /*
-     *  Thread 1
-     */
+    //Pass the argument of the UART so that the hardware is
+    //initialized correctly
+    startUART(&uart);
 
     /* Initialize the attributes structure with default values */
     pthread_attr_init(&attrs);
@@ -107,18 +114,6 @@ int main(void)
         //Error setting the stack size
         while(1);
     }
-
-    retc = pthread_create(&thread, &attrs, uartTask, NULL);
-    if (retc != 0) {
-        /* pthread_create() failed */
-        while (1);
-    }
-    /*
-     * End Thread 1
-     */
-
-
-
     /*
      * TX thread
      */
@@ -126,31 +121,68 @@ int main(void)
     priParam.sched_priority = 2;
     pthread_attr_setschedparam(&attrs, &priParam);
 
-    retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
-    if(retc != 0)
-    {
-        //Failed to initialize the task
-        while(1);
-    }
     /*
-     * End TX thread
-     */
-
-
-    /*
-     * Rx thread
+     * UART Read Task
      */
 
     //Send as parameter the handle of the queue I need to pass data around
-//    retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
-//    if(retc != 0)
-//    {
-//        while(1);
-//    }
+    retc = pthread_create(&uartReadThread, &attrs, uartReadTask, uart);
+    if(retc != 0)
+    {
+        while(1);
+    }
 
     /*
-     * End Rx Thread
+     * End UART Read Task
      */
+
+
+    priParam.sched_priority = 2;
+    pthread_attr_setschedparam(&attrs, &priParam);
+      /*
+       * UART Write Task
+       */
+
+      //Send as parameter the handle of the queue I need to pass data around
+      retc = pthread_create(&uartWriteThread, &attrs, uartWriteTask, uart);
+      if(retc != 0)
+      {
+          while(1);
+      }
+
+      /*
+       * End UART Write Task
+       */
+
+
+     priParam.sched_priority = 1;
+     pthread_attr_setschedparam(&attrs, &priParam);
+
+     retc = pthread_create(&txThreadTask, &attrs, txTask, NULL);
+     if(retc != 0)
+     {
+         //Failed to initialize the task
+         while(1);
+     }
+     /*
+      * End TX thread
+      */
+
+
+     /*
+      * Rx thread
+      */
+
+     //Send as parameter the handle of the queue I need to pass data around
+     retc = pthread_create(&rxThreadTask, &attrs, rxTask, NULL);
+     if(retc != 0)
+     {
+         //while(1);
+     }
+
+     /*
+      * End Rx Thread
+      */
 
 
     /*
