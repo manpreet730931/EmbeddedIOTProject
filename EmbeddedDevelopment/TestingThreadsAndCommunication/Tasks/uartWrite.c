@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <stddef.h>
 
@@ -14,7 +13,7 @@
 #include "taskDefinitions.h"
 #include <mqueue.h>
 
-void *uartWriteTask(void *handle)
+void *uartWriteTask(UArg *handle)
 {
     UART_Handle uart = (UART_Handle)handle;
     const char  echoPrompt[] = "Echoing characters:\r\n";
@@ -43,6 +42,6 @@ void *uartWriteTask(void *handle)
         {
             UART_write(uart,&(messageReceived) ,sizeof(messageReceived));
         }
-        usleep(5000);
+        usleep(50000);
     }
 }

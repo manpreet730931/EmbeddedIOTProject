@@ -1,7 +1,9 @@
 #include "startUart.h"
 #include "Board.h"
+#include <DataStructures/ComQueue.h>
+#include <mqueue.h>
 
-uint8_t startUART(UART_Handle *uart)
+uint8_t startUART(UART_Handle *uartPt)
 {
     UART_Params uartParams;
     /* Call driver init functions */
@@ -15,10 +17,9 @@ uint8_t startUART(UART_Handle *uart)
     uartParams.readReturnMode = UART_RETURN_NEWLINE;
     uartParams.readMode = UART_MODE_BLOCKING;
 
+    *uartPt = UART_open(Board_UART0, &uartParams);
 
-    *uart = UART_open(Board_UART0, &uartParams);
-
-    if (uart == NULL) {
+    if (uartPt == NULL) {
         /* UART_open() failed so return 1*/
         return 1;
     }

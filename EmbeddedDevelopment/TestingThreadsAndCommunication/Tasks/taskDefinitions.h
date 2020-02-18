@@ -1,16 +1,18 @@
 #include <ti/drivers/UART.h>
+#include <ti/sysbios/BIOS.h>
+#include <stdint.h>
 
 //Definition of functions for LED management
 void *ledTask(void *arg);
 
 //Perform UART Write operations
-void *uartWriteTask(void *arg);
+void *uartWriteTask(UArg *arg);
 
 //Peform UART Read operations
-void *uartReadTask(void *arg);
+void *uartReadTask(UArg *arg);
 
 //RF Tx task
-void *txTask(void *arg);
+void *txTask(UArg *arg);
 
 //RF Rx Task
-void *rxTask(void *arg);
+void *rxTask(UArg *arg);

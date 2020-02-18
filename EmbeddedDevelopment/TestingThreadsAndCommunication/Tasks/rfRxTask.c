@@ -63,10 +63,9 @@ bool state = false;
 mqd_t mq = NULL;
 char newPacket[MAX_LENGTH];
 
-
 /***** Function definitions *****/
 
-void *rxTask(void *arg0)
+void *rxTask(UArg *arg0)
 {
     //configuration
 

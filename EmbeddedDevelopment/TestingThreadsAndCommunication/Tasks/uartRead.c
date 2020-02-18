@@ -13,25 +13,27 @@
 #include "taskDefinitions.h"
 #include <mqueue.h>
 
-void *uartReadTask(void *arg)
+void *uartReadTask(UArg *arg)
 {
     //Cast the argument into something that is
     //known
-    mqd_t mq = NULL;
-
+    mqd_t tQm = NULL;
     UART_Handle uart = (UART_Handle)arg;
     char messageReceived[MAX_LENGTH];
-
+    tQm = mq_open(sendQueue, O_WRONLY);
+    bool state = false;
     while(1)
     {
         UART_read(uart, messageReceived, sizeof(messageReceived));
-
-        if(mq==NULL)
+        mq_send(tQm, (char *)&messageReceived, MAX_LENGTH, 0);
+        GPIO_write(Board_GPIO_LED1, state);
+        if(state)
         {
-            mq = mq_open(sendQueue, O_WRONLY);
+            state = false;
         }
-        mq_send(mq, (char *)&messageReceived, MAX_LENGTH, 0);
-
-        usleep(5000);
+        else
+        {
+            state = true;
+        }
     }
 }

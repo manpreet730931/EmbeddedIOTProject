@@ -44,7 +44,7 @@ static uint16_t seqNumber;
 /***** Function definitions *****/
 
 
-void *txTask(void *arg0)
+void *txTask(UArg *arg0)
 {
     //Configuration
 
@@ -75,7 +75,6 @@ void *txTask(void *arg0)
     attr.mq_curmsgs = 0;
     tQm = mq_open(sendQueue, O_CREAT | O_RDONLY, 0644, &attr);
 
-    char messageReceived[MAX_LENGTH];
     ssize_t bytes_read;
 
     while(1)
@@ -89,8 +88,7 @@ void *txTask(void *arg0)
 //            packet[i] = (rand() % 50) + 48 ;
 //        }
 
-        bytes_read = mq_receive(tQm, (char *)messageReceived, MAX_LENGTH, NULL);
-        memcpy(packet,messageReceived , sizeof(packet));
+        bytes_read = mq_receive(tQm, (char *)packet, MAX_LENGTH, NULL);
 
         if(bytes_read)
         {
@@ -154,15 +152,15 @@ void *txTask(void *arg0)
                 while(1);
         }
 
-        GPIO_write(Board_GPIO_LED1, state);
-        if(state)
-        {
-            state = false;
-        }
-        else
-        {
-            state = true;
-        }
+//        GPIO_write(Board_GPIO_LED1, state);
+//        if(state)
+//        {
+//            state = false;
+//        }
+//        else
+//        {
+//            state = true;
+//        }
         /* Power down the radio */
         RF_yield(rfHandle);
 
